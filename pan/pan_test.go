@@ -97,7 +97,9 @@ var useCases = []struct {
 				{},
 			},
 		},
-		yml: "title: My Podcast",
+		yml: `title: My Podcast
+items:
+- `,
 	},
 	{
 		name: "Single full item, and channel title",
@@ -201,8 +203,16 @@ func TestReadYML(t *testing.T) {
 				YMLFeed.Title,
 			)
 		}
-		for i, expectedItem := range YMLFeed.Items {
-			if expectedItem != useCase.ymlFeed.Items[i] {
+		if len(useCase.ymlFeed.Items) != len(YMLFeed.Items) {
+			t.Errorf(
+				"[%s] Wrong number of items %s, should be %s",
+				useCase.name,
+				len(YMLFeed.Items),
+				len(useCase.ymlFeed.Items),
+			)
+		}
+		for i, expectedItem := range useCase.ymlFeed.Items {
+			if expectedItem != YMLFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong Item %v",
 					useCase.name,
