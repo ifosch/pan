@@ -23,6 +23,8 @@ import (
 	"testing"
 )
 
+var pubDate1 = "Tue, 27 Jan 2015 20:00:00 +0000"
+var link1 = "http://mypodcast.com/mypodcast-1.mp3"
 var useCases = []struct {
 	xml    string
 	xmlRss XMLRss
@@ -45,7 +47,12 @@ var useCases = []struct {
 		yml: "",
 	},
 	{
-		xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss><channel><title>My Podcast</title></channel></rss>",
+		xml: `<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+  <channel>
+    <title>My Podcast</title>
+  </channel>
+</rss>`,
 		xmlRss: XMLRss{
 			XMLName: xml.Name{
 				Local: "rss",
@@ -60,7 +67,13 @@ var useCases = []struct {
 		yml: "title: My Podcast",
 	},
 	{
-		xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss><channel><title>My Podcast</title><item></item></channel></rss>",
+		xml: `<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+  <channel>
+    <title>My Podcast</title>
+    <item></item>
+  </channel>
+</rss>`,
 		xmlRss: XMLRss{
 			XMLName: xml.Name{
 				Local: "rss",
@@ -81,7 +94,18 @@ var useCases = []struct {
 		yml: "title: My Podcast",
 	},
 	{
-		xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss><channel><title>My Podcast</title><item><title>My first episode</title><description>Hello world!</description><pubDate>Tue, 27 Jan 2015 20:00:00 +0000</pubDate><link>http://mypodcast.com/mypodcast-1.mp3</link></item></channel></rss>",
+		xml: `<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+  <channel>
+    <title>My Podcast</title>
+    <item>
+      <title>My first episode</title>
+      <description>Hello world!</description>
+      <pubDate>Tue, 27 Jan 2015 20:00:00 +0000</pubDate>
+      <link>http://mypodcast.com/mypodcast-1.mp3</link>
+    </item>
+  </channel>
+</rss>`,
 		xmlRss: XMLRss{
 			XMLName: xml.Name{
 				Local: "rss",
@@ -92,8 +116,8 @@ var useCases = []struct {
 					XMLName:     xml.Name{Local: "item"},
 					Title:       "My first episode",
 					Description: "Hello world!",
-					PubDate:     "Tue, 27 Jan 2015 20:00:00 +0000",
-					Link:        "http://mypodcast.com/mypodcast-1.mp3",
+					PubDate:     pubDate1,
+					Link:        link1,
 				},
 			},
 		},
@@ -103,12 +127,17 @@ var useCases = []struct {
 				{
 					Title:       "My first episode",
 					Description: "Hello world!",
-					PubDate:     "Tue, 27 Jan 2015 20:00:00 +0000",
-					Link:        "http://mypodcast.com/mypodcast-1.mp3",
+					PubDate:     pubDate1,
+					Link:        link1,
 				},
 			},
 		},
-		yml: "title: My Podcast\nitems:\n- title: My first episode\n  description: Hello world!\n  pubDate: Tue, 27 Jan 2015 20:00:00 +0000\n  link: http://mypodcast.com/mypodcast-1.mp3",
+		yml: `title: My Podcast
+items:
+- title: My first episode
+  description: Hello world!
+  pubDate: Tue, 27 Jan 2015 20:00:00 +0000
+  link: http://mypodcast.com/mypodcast-1.mp3`,
 	},
 }
 
@@ -119,10 +148,16 @@ func TestReadXML(t *testing.T) {
 			t.Errorf("Unexpected error %s", err)
 		}
 		if XMLFeed.XMLName != useCase.xmlRss.XMLName {
-			t.Errorf("Unexpected output xml.Name %s", XMLFeed.XMLName)
+			t.Errorf(
+				"Unexpected output xml.Name %s",
+				XMLFeed.XMLName,
+			)
 		}
 		if XMLFeed.Title != useCase.xmlRss.Title {
-			t.Errorf("Unexpected output title %s", XMLFeed.Title)
+			t.Errorf(
+				"Unexpected output title %s",
+				XMLFeed.Title,
+			)
 		}
 		for i, item := range XMLFeed.Items {
 			if item != useCase.xmlRss.Items[i] {
@@ -139,7 +174,10 @@ func TestReadYML(t *testing.T) {
 			t.Errorf("Unexpected error %s", err)
 		}
 		if YMLFeed.Title != useCase.ymlRss.Title {
-			t.Errorf("Unexpected output title %s", YMLFeed.Title)
+			t.Errorf(
+				"Unexpected output title %s",
+				YMLFeed.Title,
+			)
 		}
 		for i, item := range YMLFeed.Items {
 			if item != useCase.ymlRss.Items[i] {
@@ -156,7 +194,10 @@ func TestXML2YML(t *testing.T) {
 			t.Errorf("Unexpected error %s", err)
 		}
 		if YMLOutput.Title != useCase.ymlRss.Title {
-			t.Errorf("Unexpected output title %s", YMLOutput.Title)
+			t.Errorf(
+				"Unexpected output title %s",
+				YMLOutput.Title,
+			)
 		}
 		for i, item := range YMLOutput.Items {
 			if item != useCase.ymlRss.Items[i] {
@@ -173,10 +214,16 @@ func TestYML2XML(t *testing.T) {
 			t.Errorf("Unexpected error %s", err)
 		}
 		if XMLOutput.XMLName != useCase.xmlRss.XMLName {
-			t.Errorf("Unexpected output xml.Name %s", XMLOutput.XMLName)
+			t.Errorf(
+				"Unexpected output xml.Name %s",
+				XMLOutput.XMLName,
+			)
 		}
 		if XMLOutput.Title != useCase.xmlRss.Title {
-			t.Errorf("Unexpected output title %s", XMLOutput.Title)
+			t.Errorf(
+				"Unexpected output title %s",
+				XMLOutput.Title,
+			)
 		}
 		for i, item := range XMLOutput.Items {
 			if item != useCase.xmlRss.Items[i] {

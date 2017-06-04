@@ -35,7 +35,8 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "pan",
 	Short: "RSS feed manager",
-	Long: `With pan you can generate a RSS XML from a YAML file, and viceversa.
+	Long: `With pan you can generate a RSS XML from a YAML file,
+and viceversa.
 For example:
 
     pan my_feed.yml > my_feed.xml
@@ -68,10 +69,20 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
-	// RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pan.yaml)")
+	// RootCmd.PersistentFlags().StringVar(
+	// 	&cfgFile,
+	// 	"config",
+	// 	"",
+	// 	"config file (default is $HOME/.pan.yaml)",
+	// )
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	// RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// RootCmd.Flags().BoolP(
+	// 	"toggle",
+	// 	"t",
+	// 	false,
+	// 	"Help message for toggle",
+	// )
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -81,7 +92,7 @@ func initConfig() {
 	}
 
 	viper.SetConfigName(".pan")  // name of config file (without extension)
-	viper.AddConfigPath("$HOME") // adding home directory as first search path
+	viper.AddConfigPath("$HOME") // add home directory as first search path
 	viper.AutomaticEnv()         // read in environment variables that match
 
 	// If a config file is found, read it in.
