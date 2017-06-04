@@ -284,8 +284,16 @@ func TestYML2XML(t *testing.T) {
 				XMLFeed.Title,
 			)
 		}
-		for i, expectedItem := range XMLFeed.Items {
-			if expectedItem != useCase.xmlFeed.Items[i] {
+		if len(useCase.xmlFeed.Items) != len(XMLFeed.Items) {
+			t.Errorf(
+				"[%s] Wrong number of items %s, should be %s",
+				useCase.name,
+				len(XMLFeed.Items),
+				len(useCase.xmlFeed.Items),
+			)
+		}
+		for i, expectedItem := range useCase.xmlFeed.Items {
+			if expectedItem != XMLFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong ExpectedItem %v",
 					useCase.name,
