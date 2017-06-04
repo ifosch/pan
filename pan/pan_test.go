@@ -26,25 +26,25 @@ import (
 var pubDate1 = "Tue, 27 Jan 2015 20:00:00 +0000"
 var link1 = "http://mypodcast.com/mypodcast-1.mp3"
 var useCases = []struct {
-	name   string
-	xml    string
-	xmlRss XMLRss
-	ymlRss YMLRss
-	yml    string
+	name    string
+	xml     string
+	xmlFeed XMLFeed
+	ymlFeed YMLFeed
+	yml     string
 }{
 	{
 		name: "Empty Rss tag",
 		xml: `<?xml version="1.0" encoding="UTF-8"?>
 <rss>
 </rss>`,
-		xmlRss: XMLRss{
+		xmlFeed: XMLFeed{
 			XMLName: xml.Name{
 				Local: "rss",
 			},
 			Title: "",
 			Items: []XMLItem{},
 		},
-		ymlRss: YMLRss{
+		ymlFeed: YMLFeed{
 			Title: "",
 			Items: []YMLItem{},
 		},
@@ -58,14 +58,14 @@ var useCases = []struct {
     <title>My Podcast</title>
   </channel>
 </rss>`,
-		xmlRss: XMLRss{
+		xmlFeed: XMLFeed{
 			XMLName: xml.Name{
 				Local: "rss",
 			},
 			Title: "My Podcast",
 			Items: []XMLItem{},
 		},
-		ymlRss: YMLRss{
+		ymlFeed: YMLFeed{
 			Title: "My Podcast",
 			Items: []YMLItem{},
 		},
@@ -80,7 +80,7 @@ var useCases = []struct {
     <item></item>
   </channel>
 </rss>`,
-		xmlRss: XMLRss{
+		xmlFeed: XMLFeed{
 			XMLName: xml.Name{
 				Local: "rss",
 			},
@@ -91,7 +91,7 @@ var useCases = []struct {
 				},
 			},
 		},
-		ymlRss: YMLRss{
+		ymlFeed: YMLFeed{
 			Title: "My Podcast",
 			Items: []YMLItem{
 				{},
@@ -113,7 +113,7 @@ var useCases = []struct {
     </item>
   </channel>
 </rss>`,
-		xmlRss: XMLRss{
+		xmlFeed: XMLFeed{
 			XMLName: xml.Name{
 				Local: "rss",
 			},
@@ -128,7 +128,7 @@ var useCases = []struct {
 				},
 			},
 		},
-		ymlRss: YMLRss{
+		ymlFeed: YMLFeed{
 			Title: "My Podcast",
 			Items: []YMLItem{
 				{
@@ -154,26 +154,26 @@ func TestReadXML(t *testing.T) {
 		if err != nil {
 			t.Errorf("[%s] Unexpected error %s", useCase.name, err)
 		}
-		if XMLFeed.XMLName != useCase.xmlRss.XMLName {
+		if XMLFeed.XMLName != useCase.xmlFeed.XMLName {
 			t.Errorf(
 				"[%s] Unexpected output xml.Name %s",
 				useCase.name,
 				XMLFeed.XMLName,
 			)
 		}
-		if XMLFeed.Title != useCase.xmlRss.Title {
+		if XMLFeed.Title != useCase.xmlFeed.Title {
 			t.Errorf(
 				"[%s] Unexpected output title %s",
 				useCase.name,
 				XMLFeed.Title,
 			)
 		}
-		for i, item := range XMLFeed.Items {
-			if item != useCase.xmlRss.Items[i] {
+		for i, expectedItem := range XMLFeed.Items {
+			if expectedItem != useCase.xmlFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong Item %v",
 					useCase.name,
-					item,
+					expectedItem,
 				)
 			}
 		}
@@ -186,19 +186,19 @@ func TestReadYML(t *testing.T) {
 		if err != nil {
 			t.Errorf("[%s] Unexpected error %s", useCase.name, err)
 		}
-		if YMLFeed.Title != useCase.ymlRss.Title {
+		if YMLFeed.Title != useCase.ymlFeed.Title {
 			t.Errorf(
 				"[%s] Unexpected output title %s",
 				useCase.name,
 				YMLFeed.Title,
 			)
 		}
-		for i, item := range YMLFeed.Items {
-			if item != useCase.ymlRss.Items[i] {
+		for i, expectedItem := range YMLFeed.Items {
+			if expectedItem != useCase.ymlFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong Item %v",
 					useCase.name,
-					item,
+					expectedItem,
 				)
 			}
 		}
@@ -207,7 +207,7 @@ func TestReadYML(t *testing.T) {
 
 func TestXML2YML(t *testing.T) {
 	for _, useCase := range useCases {
-		YMLOutput, err := XML2YML(useCase.xmlRss)
+		YMLFeed, err := XML2YML(useCase.xmlFeed)
 		if err != nil {
 			t.Errorf(
 				"[%s] Unexpected error %s",
@@ -215,19 +215,19 @@ func TestXML2YML(t *testing.T) {
 				err,
 			)
 		}
-		if YMLOutput.Title != useCase.ymlRss.Title {
+		if YMLFeed.Title != useCase.ymlFeed.Title {
 			t.Errorf(
 				"[%s] Unexpected output title %s",
 				useCase.name,
-				YMLOutput.Title,
+				YMLFeed.Title,
 			)
 		}
-		for i, item := range YMLOutput.Items {
-			if item != useCase.ymlRss.Items[i] {
+		for i, expectedItem := range YMLFeed.Items {
+			if expectedItem != useCase.ymlFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong Item %v",
 					useCase.name,
-					item,
+					expectedItem,
 				)
 			}
 		}
@@ -236,7 +236,7 @@ func TestXML2YML(t *testing.T) {
 
 func TestYML2XML(t *testing.T) {
 	for _, useCase := range useCases {
-		XMLOutput, err := YML2XML(useCase.ymlRss)
+		XMLFeed, err := YML2XML(useCase.ymlFeed)
 		if err != nil {
 			t.Errorf(
 				"[%s] Unexpected error %s",
@@ -244,26 +244,26 @@ func TestYML2XML(t *testing.T) {
 				err,
 			)
 		}
-		if XMLOutput.XMLName != useCase.xmlRss.XMLName {
+		if XMLFeed.XMLName != useCase.xmlFeed.XMLName {
 			t.Errorf(
 				"[%s] Unexpected output xml.Name %s",
 				useCase.name,
-				XMLOutput.XMLName,
+				XMLFeed.XMLName,
 			)
 		}
-		if XMLOutput.Title != useCase.xmlRss.Title {
+		if XMLFeed.Title != useCase.xmlFeed.Title {
 			t.Errorf(
 				"[%s] Unexpected output title %s",
 				useCase.name,
-				XMLOutput.Title,
+				XMLFeed.Title,
 			)
 		}
-		for i, item := range XMLOutput.Items {
-			if item != useCase.xmlRss.Items[i] {
+		for i, expectedItem := range XMLFeed.Items {
+			if expectedItem != useCase.xmlFeed.Items[i] {
 				t.Errorf(
 					"[%s] Wrong ExpectedItem %v",
 					useCase.name,
-					item,
+					expectedItem,
 				)
 			}
 		}

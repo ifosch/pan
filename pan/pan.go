@@ -34,8 +34,8 @@ type YMLItem struct {
 	Title       string `json:"title"`
 }
 
-// YMLRss represents a RSS feed.
-type YMLRss struct {
+// YMLFeed represents a RSS feed.
+type YMLFeed struct {
 	Title string    `json:"title"`
 	Items []YMLItem `json:"items"`
 }
@@ -50,8 +50,8 @@ type XMLItem struct {
 	Title       string `xml:"title"`
 }
 
-// XMLRss represents a RSS feed.
-type XMLRss struct {
+// XMLFeed represents a RSS feed.
+type XMLFeed struct {
 	XMLName xml.Name `xml:"rss"`
 
 	Title string    `xml:"channel>title"`
@@ -59,13 +59,13 @@ type XMLRss struct {
 }
 
 // readYML tries to unmarshall YML content.
-func readYML(content []byte) (feed YMLRss, err error) {
+func readYML(content []byte) (feed YMLFeed, err error) {
 	err = yaml.Unmarshal(content, &feed)
 	return
 }
 
 // YML2XML converts the struct from YML to XML.
-func YML2XML(feed YMLRss) (output XMLRss, err error) {
+func YML2XML(feed YMLFeed) (output XMLFeed, err error) {
 	items := []XMLItem{}
 	for _, item := range feed.Items {
 		newItem := XMLItem{
@@ -77,7 +77,7 @@ func YML2XML(feed YMLRss) (output XMLRss, err error) {
 		}
 		items = append(items, newItem)
 	}
-	output = XMLRss{
+	output = XMLFeed{
 		XMLName: xml.Name{Local: "rss"},
 		Title:   feed.Title,
 		Items:   items,
@@ -86,13 +86,13 @@ func YML2XML(feed YMLRss) (output XMLRss, err error) {
 }
 
 // readXML tries to unmarshall XML content.
-func readXML(content []byte) (feed XMLRss, err error) {
+func readXML(content []byte) (feed XMLFeed, err error) {
 	err = xml.Unmarshal(content, &feed)
 	return
 }
 
 // XML2YML converts the struct from XML to YML.
-func XML2YML(feed XMLRss) (output YMLRss, err error) {
+func XML2YML(feed XMLFeed) (output YMLFeed, err error) {
 	items := []YMLItem{}
 	for _, item := range feed.Items {
 		newItem := YMLItem{
@@ -103,7 +103,7 @@ func XML2YML(feed XMLRss) (output YMLRss, err error) {
 		}
 		items = append(items, newItem)
 	}
-	output = YMLRss{
+	output = YMLFeed{
 		Title: feed.Title,
 		Items: items,
 	}
